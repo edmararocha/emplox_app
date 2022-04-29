@@ -1,58 +1,60 @@
 import 'package:flutter/material.dart';
-
-import '../models/UserModel.dart';
-import '../repositories/login_repository.dart';
+import '../repositories/user_repository.dart';
 
 abstract class LoginContract {
-  // void loginStart();
-  void loginSuccess();
-  void loginError();
-  void loginManangement();
+  loginStart();
+  loginLoading();
+  loginSuccess();
+  loginError();
+  loadingManagement();
 }
 
 class LoginPresenter {
-  final formKey = GlobalKey<FormState>();
 
-  final LoginRepository loginRepository;
   final LoginContract loginContract;
+
+  UserRepository _userRepository = UserRepository();
+  
+  final state = ValueNotifier<LoginState>(LoginState.start);
 
   bool isLoading = false;
 
-  LoginPresenter(this.loginRepository, this.loginContract);
+  LoginPresenter(this.loginContract);
 
-  UserModel user = UserModel();
+  TextEditingController username = TextEditingController();
+  TextEditingController password = TextEditingController();
 
-  userEmail (String value) => {user.email = value};
-  userPassword (String value) => {user.password = value};
-  
-  loginManangement() async {
+  loginManangement(user, password) async {
     late bool isLogin;
+
+    state.value = LoginState.loading;
     isLoading = true;
-    loginContract.loginManangement();
-    
-    if (!formKey.currentState!.validate()) {
-      isLoading = false;
-    } else {
-      formKey.currentState!.save();
+    loginContract.loadingManagement();
+    try {
+      isLogin = await _userRepository.fetchUserLogin(user, password);
 
-      try {
-        isLogin = await loginRepository.doLogin(user);
+      if (isLogin) {
+        isLoading = false;
+        loginContract.loadingManagement();
         print("isLogin: $isLogin");
-      } catch (e) {
-        isLogin = false;
+        loginContract.loginSuccess();
       }
+
+    } catch (e) {
+      state.value = LoginState.error;
     }
+  }
 
-    isLoading = false;
-    loginContract.loginManangement();
-
-    print(user.email);
-    print(user.password);
-
-    if (isLogin) {
-      loginContract.loginSuccess();
-    } else {
-      loginContract.loginError();
+  stateManagement(LoginState state) {
+    switch (state) {
+      case LoginState.start:
+        return loginContract.loginStart();
+      case LoginState.loading:
+        return loginContract.loginLoading();
+      case LoginState.error:
+        return loginContract.loginError();
     }
   }
 }
+
+enum LoginState {start, error, loading} 

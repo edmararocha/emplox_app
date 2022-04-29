@@ -1,73 +1,111 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:emplox/src/components/button_back.dart';
-import 'package:emplox/src/components/submit_button.dart';
 import 'package:flutter/material.dart';
 
-import '../login/components/textfield_form.dart';
+import '../components/field_form.dart';
+import '../components/submit_button.dart';
+import '../presenters/RegisterPresenter.dart';
 
 class RegisterPage extends StatefulWidget {
   const 
   RegisterPage({ Key? key }) : super(key: key);
 
   @override
-  State<
-  RegisterPage> createState() => _RegisterPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<
-RegisterPage> {
+class _RegisterPageState extends State<RegisterPage> implements RegisterContract {
+  late RegisterPresenter presenter;
+
+  @override
+  void initState() {
+    super.initState();
+    presenter = RegisterPresenter(this);
+  }
+
+  @override
+  loadingManagement() {
+    setState(() {});
+  }
+
+  @override
+  registerError() {
+    return AlertDialog(
+      backgroundColor: Colors.black87,
+      title: Text('Erro', style: TextStyle(color: Colors.white),),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: <Widget>[
+            Text('Não foi possível cadastrar o usuário!', style: TextStyle(color: Colors.white),),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text('Tentar novamente'),
+          onPressed: () {
+            presenter.state.value = RegisterState.start;
+          },
+        ),
+      ],
+    );
+  }
+
+  @override
+  registerSuccess() {
+    Navigator.of(context).pushReplacementNamed("/home");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-          color: Colors.black87,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 40.0,left: 40.0, top: 40.0, bottom: 20.0),
-            child: Column(
+        body: AnimatedBuilder(
+          animation: presenter.state, 
+          builder: (context, child) => presenter.stateManagement(presenter.state.value)
+        ),
+    );
+  }
+
+  @override
+  registerLoading() {
+   return Center(child: presenter.isLoading ? CircularProgressIndicator() : Container(color: Colors.black87,));
+  }
+
+  @override
+  registerStart() {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      color: Colors.black87,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 40.0,left: 40.0, top: 40.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              // ignore: prefer_const_literals_to_create_immutables
               children: [
-                Container(height: 40,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ButtonBack(route: "/"),
-                    
-                    Text(
-                      "EMPLOX",
-                      style: TextStyle(fontSize: 50, color: Colors.white),
-                      )
-                  ],
-                ),
-                Container(height: 50,),
-                // TextFieldForm(labelText: 'Nome Do Usuário'),
-                // Container(height: 33,),
-                // TextFieldForm(labelText: 'E-mail'),
-                // Container(height: 33,),
-                // TextFieldForm(labelText: 'Senha'),
-                Container(height: 52,),
-                
-                ElevatedButton(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/home');
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(21.0),
-                      child: Text("Registre-Se", style: TextStyle(fontSize: 20)),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.blue,
-                      onPrimary: Colors.black87,
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      minimumSize: Size(272, 51),
-                    ),
-                  ), 
+                ButtonBack(route: "/"),
+                Text(
+                  "EMPLOX",
+                  style: TextStyle(fontSize: 50, color: Colors.white),
+                  )
               ],
             ),
-          ),
+            Container(height: 70,),
+
+            FieldForm(labelText: "Usuário", controller: presenter.username),
+            Container(height: 10,),
+            FieldForm(labelText: "Email", controller: presenter.email),
+            Container(height: 10,),
+            FieldForm(labelText: "Senha", controller: presenter.password),
+            Container(height: 40,),
+            SubmitButton(text: "Registrar-Se", onPressed: () { presenter.registerManangement(presenter.username.text, presenter.email.text, presenter.password.text);},)
+          ],
         ),
+      ),
     );
   }
 }

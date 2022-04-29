@@ -1,10 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:emplox/src/components/button_back.dart';
+import 'package:emplox/src/components/submit_button.dart';
 import 'package:flutter/material.dart';
 
+import '../components/field_form.dart';
 import '../presenters/LoginPresenter.dart';
-import '../repositories/login_repository.dart';
 
 class LoginFormPage extends StatefulWidget {
   const LoginFormPage({ Key? key }) : super(key: key);
@@ -14,142 +15,94 @@ class LoginFormPage extends StatefulWidget {
 }
 
 class _LoginFormPageState extends State<LoginFormPage> implements LoginContract {
-
   late LoginPresenter presenter;
-
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-    presenter = LoginPresenter(LoginRepository(), this);
+    presenter = LoginPresenter(this);
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
-  void loginManangement() {
+  loadingManagement() {
     setState(() {});
   }
 
   @override
-  void loginError() {
-   ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Login error"),
-        duration: Duration(milliseconds: 2000),
-        backgroundColor: Colors.red,
+  loginError() {
+    return AlertDialog(
+      backgroundColor: Colors.black87,
+      title: Text('Erro', style: TextStyle(color: Colors.white),),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: <Widget>[
+            Text('Usuário ou senha incorretos', style: TextStyle(color: Colors.white),),
+          ],
+        ),
       ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text('Tentar novamente'),
+          onPressed: () {
+            presenter.state.value = LoginState.start;
+          },
+        ),
+      ],
     );
   }
 
   @override
-  void loginSuccess() {
+  loginSuccess() {
     Navigator.of(context).pushReplacementNamed("/home");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          color: Colors.black87,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 40.0,left: 40.0, top: 40.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  // ignore: prefer_const_literals_to_create_immutables
-                  children: [
-                    ButtonBack(route: "/"),
-                    Text(
-                      "EMPLOX",
-                      style: TextStyle(fontSize: 50, color: Colors.white),
-                      )
-                  ],
-                ),
-                Container(height: 70,),
+        body: AnimatedBuilder(
+          animation: presenter.state, 
+          builder: (context, child) => presenter.stateManagement(presenter.state.value)
+        ),
+    );
+  }
 
-                Form(
-                  key: presenter.formKey,
-                  child: SingleChildScrollView(
-                    child: Column(
-                    children: [
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Email',
-                          labelStyle: const TextStyle(color: Colors.white70),
-                          border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
-                          enabledBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
-                          ),
-                          focusedBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
-                          ),
-                        ),
-                        onSaved: (value) {
-                            presenter.userEmail(value!);
-                        },
-                        validator: (value) {
-                           if (value!.isEmpty) {
-                            return 'Campo não pode ser vazio';
-                          } else if (!value.contains("@")) {
-                            return 'Email não é válido';
-                          }   
-                        },
-                      ),
-                      Container(height: 10,),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Senha',
-                          labelStyle: const TextStyle(color: Colors.white70),
-                          border: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.blue)),
-                          enabledBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
-                          ),
-                          focusedBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.blue),
-                          ),
-                        ),
-                        onSaved: (value) { 
-                          presenter.userPassword(value!); 
-                        },
-                        validator: (value) {
-                            if (value!.isEmpty) {
-                              return 'Campo não pode ser vazio';
-                            }
-                          }
-                      ),
-                      Container(height: 40,)
-                    ],
-                  ),)
-                ),
-                ElevatedButton(
-                    onPressed: presenter.isLoading ? null : presenter.loginManangement,
-                    child: Padding(
-                      padding: const EdgeInsets.all(21.0),
-                      child: Text("Entrar", style: TextStyle(fontSize: 20)),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.blue,
-                      onPrimary: Colors.black87,
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      minimumSize: Size(272, 51),
-                    ),
-                  ), 
+  @override
+  loginLoading() {
+   return Center(child: presenter.isLoading ? CircularProgressIndicator() : Container(color: Colors.black87,));
+  }
+
+  @override
+  loginStart() {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      color: Colors.black87,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 40.0,left: 40.0, top: 40.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              // ignore: prefer_const_literals_to_create_immutables
+              children: [
+                ButtonBack(route: "/"),
+                Text(
+                  "EMPLOX",
+                  style: TextStyle(fontSize: 50, color: Colors.white),
+                  )
               ],
             ),
-          ),
+            Container(height: 70,),
+
+            FieldForm(labelText: "Usuário", controller: presenter.username),
+            Container(height: 10,),
+            FieldForm(labelText: "Senha", controller: presenter.password),
+            Container(height: 40,),
+            SubmitButton(text: "Login", onPressed: () { presenter.loginManangement(presenter.username.text, presenter.password.text);},)
+          ],
         ),
+      ),
     );
   }
 }

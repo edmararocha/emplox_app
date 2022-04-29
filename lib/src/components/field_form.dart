@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class FieldForm extends StatelessWidget {
   const FieldForm({ Key? key, required this.labelText, required this.controller}) : super(key: key);
   
-  final Function() controller;
+  final TextEditingController controller;
   final String labelText;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: controller(),
+      controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: const TextStyle(color: Colors.white70),
