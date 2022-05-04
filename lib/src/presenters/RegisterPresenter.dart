@@ -35,7 +35,7 @@ class RegisterPresenter {
     try {
       isRegister = await _userRepository.fetchUserRegister(user, email, password);
 
-      if (isRegister) {
+      if (!isRegister) {
         isLoading = false;
         registerContract.loadingManagement();
         print("isRegister: $isRegister");

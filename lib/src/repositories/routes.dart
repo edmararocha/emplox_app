@@ -31,4 +31,16 @@ class Routes {
       throw Exception('[-] Erro ao cadastrar usuário: $e');
     }
   }
+
+  Future funcList() async {
+    String route = baseUrl + "/employee";
+
+    try {
+      var response = await dio.get(route);
+      return response.data;
+
+    } catch (e) {
+      throw Exception("[-] Erro ao consultar funcionários: $e");
+    }
+  }
 }
