@@ -11,6 +11,11 @@ class FuncRepository {
     return list.map((json) => FuncModel.fromJson(json)).toList();
   }
 
+  Future fetchFuncRegister(String name, String role) async {
+    final response = await routes.registerFunc(name, role);
+    return response['error'];
+  }
+
   // Future fetchCreateFunc (String username, String password) async {
   //   final response = await routes.login(username, password);
   //   return response['auth'];

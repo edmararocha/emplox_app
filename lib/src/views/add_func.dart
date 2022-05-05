@@ -4,43 +4,107 @@ import 'package:emplox/src/components/button_back.dart';
 import 'package:emplox/src/components/field_form.dart';
 import 'package:flutter/material.dart';
 
-class AddFunc extends StatefulWidget {
-  const AddFunc({ Key? key }) : super(key: key);
+import '../components/submit_button.dart';
+import '../presenters/addFuncPresenter.dart';
+
+
+class AddFuncPage extends StatefulWidget {
+  const 
+  AddFuncPage({ Key? key }) : super(key: key);
 
   @override
-  State<AddFunc> createState() => _AddFuncState();
+  State<AddFuncPage> createState() => _AddFuncPageState();
 }
 
-class _AddFuncState extends State<AddFunc> {
+class _AddFuncPageState extends State<AddFuncPage> implements AddFuncContract {
+  late AddFuncPresenter presenter;
+
+  @override
+  void initState() {
+    super.initState();
+    presenter = AddFuncPresenter(this);
+  }
+
+  @override
+  loadingManagement() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Colors.black87,
-        child: Padding(
-          padding: const EdgeInsets.only(right: 25, left: 25, top: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            // ignore: prefer_const_literals_to_create_immutables
-            children: [
-              ButtonBack(route: '/home',),
-              Container(height: 30,),
-              Text(
-                '''Cadastrar Funcionário''',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 30,
-                ),
-                textAlign: TextAlign.start,
-              ),
-              // Container(height: 30,),
-              // FieldForm(labelText: "Nome Do Funcionário", controller: () {}),
-              // Container(height: 20,),
-              // FieldForm(labelText: "Cargo", controller: null),
-            ],
-          ),
+        body: AnimatedBuilder(
+          animation: presenter.state, 
+          builder: (context, child) => presenter.stateManagement(presenter.state.value)
+        ),
+    );
+  }
+
+  @override
+  Error() {
+    return AlertDialog(
+      backgroundColor: Colors.black87,
+      title: Text('Erro', style: TextStyle(color: Colors.white),),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: <Widget>[
+            Text('Não foi possível cadastrar o funcionário!', style: TextStyle(color: Colors.white),),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text('Tentar novamente'),
+          onPressed: () {
+            presenter.state.value = AddFuncState.start;
+          },
+        ),
+      ],
+    );
+  }
+
+  @override
+  Loading() {
+    return Center(child: presenter.isLoading ? CircularProgressIndicator() : Container(color: Colors.black87,));
+  }
+
+  @override
+  Start() {
+   return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      color: Colors.black87,
+      child: Padding(
+        padding: const EdgeInsets.only(right: 40.0,left: 40.0, top: 40.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              // ignore: prefer_const_literals_to_create_immutables
+              children: [
+                ButtonBack(route: "/home"),
+                Text(
+                  "EMPLOX",
+                  style: TextStyle(fontSize: 50, color: Colors.white),
+                  )
+              ],
+            ),
+            Container(height: 70,),
+
+            FieldForm(labelText: "Nome do funcionário", controller: presenter.name),
+            Container(height: 10,),
+            FieldForm(labelText: "Cargo", controller: presenter.role),
+            Container(height: 40,),
+            SubmitButton(text: "Registrar", onPressed: () { presenter.registerManangement(presenter.name.text, presenter.role.text);},)
+          ],
         ),
       ),
     );
+  }
+
+  @override
+  Success() {
+    Navigator.of(context).pushReplacementNamed("/home");
   }
 }

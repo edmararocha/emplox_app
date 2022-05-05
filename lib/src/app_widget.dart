@@ -25,7 +25,7 @@ class AppWidget extends StatelessWidget {
         '/login_form': (context) => const LoginFormPage(),
         '/register_form': (context) => const RegisterPage(),
         '/home': (context) => const HomePage(),
-        '/add_func': (context) => const AddFunc(),
+        '/add_func': (context) => const AddFuncPage(),
         '/update_func': (context) => const UpdateFunc(),
       },
     );

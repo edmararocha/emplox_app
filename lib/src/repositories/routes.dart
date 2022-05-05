@@ -33,7 +33,7 @@ class Routes {
   }
 
   Future funcList() async {
-    String route = baseUrl + "/employee";
+    String route = baseUrl + "employee";
 
     try {
       var response = await dio.get(route);
@@ -41,6 +41,19 @@ class Routes {
 
     } catch (e) {
       throw Exception("[-] Erro ao consultar funcionários: $e");
+    }
+  }
+
+ Future registerFunc(String name, String role) async {
+    String route = baseUrl + "employee";
+    try {
+      var response = await dio.post(route, 
+      data:  {"name": name, "role": role},
+      options: Options(contentType: Headers.jsonContentType,));
+      return response.data;
+
+    } catch (e) {
+      throw Exception('[-] Erro ao cadastrar funcionário: $e');
     }
   }
 }

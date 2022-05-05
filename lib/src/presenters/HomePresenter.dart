@@ -24,21 +24,18 @@ class homePresenter {
  
   homePresenter(this.homeContract);
 
-  homeManangement(user, password) async {
-    late bool result;
-
-    state.value = HomeState.loading;
-    isLoading = true;
-    homeContract.loadingManagement();
+  start() async {
     try {
       funcList = await _funcRepository.fetchFuncList();
 
       if (funcList.length > 0) {
-        homeContract.homeSuccess();
+        state.value = HomeState.success;
+        print(funcList.length);
       }
 
     } catch (e) {
       state.value = HomeState.error;
+      print(e);
     }
   }
 
@@ -56,3 +53,9 @@ class homePresenter {
 
 enum HomeState {success, error, loading} 
 enum DeleteState {start, error} 
+
+// late bool result;
+
+//     state.value = HomeState.loading;
+//     isLoading = true;
+//     homeContract.loadingManagement();
