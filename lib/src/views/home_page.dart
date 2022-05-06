@@ -1,5 +1,7 @@
 import 'package:emplox/src/components/card_item.dart';
+import 'package:emplox/src/components/title_home.dart';
 import 'package:emplox/src/presenters/HomePresenter.dart';
+import 'package:emplox/src/views/update_func.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -84,7 +86,7 @@ class _HomePageState extends State<HomePage> implements HomeContract {
 
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-          Navigator.pushReplacementNamed(context, '/add_func');
+          Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateFuncPage(funcId: presenter.id)),);
         },
         child: const Icon(Icons.add),
       ),
@@ -97,40 +99,18 @@ class _HomePageState extends State<HomePage> implements HomeContract {
       child: Container(
        color: Colors.black87,
         child: Padding(
-          padding: const EdgeInsets.only(top: 20.0),
+          padding: const EdgeInsets.only(top: 30.0,),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               IconButton(
                 alignment: Alignment.centerLeft,
                 onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-                icon: const Icon(Icons.menu),
+                icon: const Icon(Icons.menu, size: 35,),
                 color: Colors.white70,
               ),
-              Container(height:50),
-              Container(
-                alignment: Alignment.center,
-                child: const Text(
-                  'Funcionários',
-                  style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: 24,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              Container(height: 20,),
-              Container(
-                alignment: Alignment.center,
-                child: const Text(
-                  'Clique no card para editar o usuário',
-                  style: TextStyle(
-                    color: Colors.white54,
-                    fontSize: 16,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+              Container(height:30),
+              TitleHome(),
               ListView.builder(
                 itemCount: presenter.funcList.length,
                 scrollDirection: Axis.vertical,
@@ -138,8 +118,19 @@ class _HomePageState extends State<HomePage> implements HomeContract {
                 itemBuilder: (context, index) {
                   var func = presenter.funcList[index];
                   return GestureDetector(
-                    onTap: () {Navigator.pushReplacementNamed(context, "/update_func");},
-                    child: CardItem(funcName: func.name.toString(), funcRole: func.role.toString(),),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => UpdateFuncPage(
+                                  funcId: presenter.id)),
+                        );
+                      },
+                    child: CardItem(funcName: func.name.toString(), funcRole: func.role.toString(), 
+                    onPressed: () {
+                      presenter.id = func.id;
+                      presenter.state.value = HomeState.alert;
+                    },),
                   );
                 },
               ), 
@@ -153,20 +144,65 @@ class _HomePageState extends State<HomePage> implements HomeContract {
   @override
   homeError() {
     return Container(
-      color: Colors.black87,
-      alignment: Alignment.center,
-      child: Text(
-        "Nenhum usuário encontrado!", 
-        style: TextStyle(
-          color: Colors.redAccent, 
-          fontSize: 16,), 
-        textAlign:TextAlign.center
-      )
-    );
+       color: Colors.black87,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 60.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              IconButton(
+                alignment: Alignment.centerLeft,
+                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                icon: const Icon(Icons.menu),
+                color: Colors.white70,
+              ),
+              TitleHome(),
+              Container(height: 100,),
+              Center(
+                child: Text(
+                  "Nenhum usuário encontrado!", 
+                  style: TextStyle(
+                    color: Colors.redAccent, 
+                    fontSize: 16,), 
+                  textAlign:TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
   }
 
   @override
   loading() {
-    return Center(child: presenter.isLoading ? CircularProgressIndicator() : Container(color: Colors.black87,));
+    return presenter.isLoading ? Container(child: Center(child: CircularProgressIndicator()), color: Colors.black87, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height,) : Container(color: Colors.black87,);
+  }
+
+  @override
+  alert(int id) {
+    return Container(
+      color: Colors.black87,
+      child: AlertDialog(
+        backgroundColor: Colors.black26,
+        title: Text('Alerta', style: TextStyle(color: Colors.white),),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('Deseja realmente deletar esse funcionário?', style: TextStyle(color: Colors.white),),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Não'),
+            onPressed: () {presenter.state.value = HomeState.success;},
+          ),
+          TextButton(
+              onPressed: () => presenter.delete(id),
+              child: const Text('Sim'),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -26,7 +26,7 @@ class AppWidget extends StatelessWidget {
         '/register_form': (context) => const RegisterPage(),
         '/home': (context) => const HomePage(),
         '/add_func': (context) => const AddFuncPage(),
-        '/update_func': (context) => const UpdateFunc(),
+        '/update_func': (context) => const UpdateFuncPage(),
       },
     );
   }

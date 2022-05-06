@@ -31,24 +31,27 @@ class _RegisterPageState extends State<RegisterPage> implements RegisterContract
 
   @override
   registerError() {
-    return AlertDialog(
-      backgroundColor: Colors.black87,
-      title: Text('Erro', style: TextStyle(color: Colors.white),),
-      content: SingleChildScrollView(
-        child: ListBody(
-          children: <Widget>[
-            Text('Não foi possível cadastrar o usuário!', style: TextStyle(color: Colors.white),),
-          ],
+    return Container(
+      color: Colors.black87,
+      child: AlertDialog(
+        backgroundColor: Colors.black26,
+        title: Text('Erro', style: TextStyle(color: Colors.white),),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('Não foi possível cadastrar o usuário!', style: TextStyle(color: Colors.white),),
+            ],
+          ),
         ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Tentar novamente'),
+            onPressed: () {
+              presenter.state.value = RegisterState.start;
+            },
+          ),
+        ],
       ),
-      actions: <Widget>[
-        TextButton(
-          child: const Text('Tentar novamente'),
-          onPressed: () {
-            presenter.state.value = RegisterState.start;
-          },
-        ),
-      ],
     );
   }
 
@@ -69,7 +72,7 @@ class _RegisterPageState extends State<RegisterPage> implements RegisterContract
 
   @override
   registerLoading() {
-   return Center(child: presenter.isLoading ? CircularProgressIndicator() : Container(color: Colors.black87,));
+   return presenter.isLoading ? Container(child: Center(child: CircularProgressIndicator()), color: Colors.black87, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height,) : Container(color: Colors.black87,);
   }
 
   @override

@@ -7,6 +7,7 @@ abstract class HomeContract {
   homeError();
   loading();
   loadingManagement();
+  alert(int id);
 }
 
 class homePresenter {
@@ -21,6 +22,8 @@ class homePresenter {
   bool isLoading = false;
 
   List<FuncModel> funcList = [];
+  
+  int? id;
  
   homePresenter(this.homeContract);
 
@@ -39,6 +42,27 @@ class homePresenter {
     }
   }
 
+  delete(int? id) async {
+    late bool result;
+
+    state.value = HomeState.loading;
+    isLoading = true;
+    homeContract.loadingManagement();
+
+    try {
+      result = await _funcRepository.fetchDeleteFunc(id!);
+
+      if (!result) {
+        isLoading = false;
+        homeContract.loadingManagement();
+        start();
+      }
+    } catch (e) {
+      deleteState.value = DeleteState.error;
+    }
+
+  }
+
   stateManagement(HomeState state) {
     switch (state) {
       case HomeState.success:
@@ -47,15 +71,11 @@ class homePresenter {
         return homeContract.loading();
       case HomeState.error:
         return homeContract.homeError();
+      case HomeState.alert:
+        return homeContract.alert(id!);
     }
   }
 }
 
-enum HomeState {success, error, loading} 
+enum HomeState {success, error, loading, alert} 
 enum DeleteState {start, error} 
-
-// late bool result;
-
-//     state.value = HomeState.loading;
-//     isLoading = true;
-//     homeContract.loadingManagement();

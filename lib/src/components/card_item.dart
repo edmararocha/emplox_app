@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class CardItem extends StatelessWidget {
-  const CardItem({ Key? key, required this.funcName, required this.funcRole }) : super(key: key);
+  const CardItem({ Key? key, required this.funcName, required this.funcRole, required this.onPressed }) : super(key: key);
 
   final String funcName;
   final String funcRole;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,7 @@ class CardItem extends StatelessWidget {
                       ],
                     ),
                     Container(width: 20,),
-                    ElevatedButton(onPressed: () {}, child: Icon(Icons.delete),),
+                    ElevatedButton(onPressed: onPressed, child: Icon(Icons.delete),style: ElevatedButton.styleFrom(primary: Colors.redAccent),),
                   ],
                 ),
               ),

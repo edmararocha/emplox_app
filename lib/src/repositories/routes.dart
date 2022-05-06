@@ -56,4 +56,28 @@ class Routes {
       throw Exception('[-] Erro ao cadastrar funcionário: $e');
     }
   }
+
+  Future updateFunc(String name, String role, int? id) async {
+    String route = baseUrl + "employee/$id";
+    try {
+      var response = await dio.put(route, 
+      data:  {"name": name, "role": role},
+      options: Options(contentType: Headers.jsonContentType,));
+      return response.data;
+    } catch (e) {
+      throw Exception('[-] Erro ao atualizar funcionário: $e');
+    }
+  }
+
+  Future deleteFunc(int? id) async {
+    String route = baseUrl + "employee/$id";
+    try {
+      var response = await dio.delete(route, 
+      options: Options(contentType: Headers.jsonContentType,));
+      return response.data;
+
+    } catch (e) {
+      throw Exception('[-] Erro ao deletar funcionário: $e');
+    }
+  }
 }

@@ -16,19 +16,13 @@ class FuncRepository {
     return response['error'];
   }
 
-  // Future fetchCreateFunc (String username, String password) async {
-  //   final response = await routes.login(username, password);
-  //   return response['auth'];
-  // }
+  Future fetchUpdateFunc (String username, String email, int? id) async {
+    final response = await routes.updateFunc(username, email, id);
+    return response['error'];
+  }
 
-  // Future fetchUpdateFunc (String username, String email, String password) async {
-  //   final response = await routes.register(username, email, password);
-  //   return response['error'];
-  // }
-
-  // Future fetchDeleteFunc (String username, String email, String password) async {
-  //   final response = await routes.register(username, email, password);
-  //   return response['error'];
-  // }
-
+  Future fetchDeleteFunc (int id) async {
+    final response = await routes.deleteFunc(id);
+    return response['error'];
+  }
 }
