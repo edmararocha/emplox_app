@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../repositories/user_repository.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 abstract class LoginContract {
   loginStart();
@@ -30,16 +31,26 @@ class LoginPresenter {
     state.value = LoginState.loading;
     isLoading = true;
     loginContract.loadingManagement();
+
     try {
-      isLogin = await _userRepository.fetchUserLogin(user, password);
+      var connectivityResult = await (Connectivity().checkConnectivity());
+      print(connectivityResult.index);
+      if (connectivityResult.index != 4) {
+        try {
+          isLogin = await _userRepository.fetchUserLogin(user, password);
 
-      if (isLogin) {
-        isLoading = false;
-        loginContract.loadingManagement();
-        print("isLogin: $isLogin");
-        loginContract.loginSuccess();
+          if (isLogin) {
+            isLoading = false;
+            loginContract.loadingManagement();
+            print("isLogin: $isLogin");
+            loginContract.loginSuccess();
+          }
+
+        } catch (e) {
+          state.value = LoginState.error;
+          print(e);
+        }
       }
-
     } catch (e) {
       state.value = LoginState.error;
     }

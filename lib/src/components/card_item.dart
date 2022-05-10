@@ -11,8 +11,6 @@ class CardItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 15, left: 15),
-      child: GestureDetector(
-        onTap:() { Navigator.pushReplacementNamed(context, '/update_func'); },
         child: Column(
           children: [
             Card(
@@ -41,7 +39,6 @@ class CardItem extends StatelessWidget {
             Container(height: 20,),
           ],
         ),
-      ),
     );
   }
 }

@@ -8,15 +8,17 @@ import '../components/submit_button.dart';
 import '../presenters/RegisterPresenter.dart';
 
 class RegisterPage extends StatefulWidget {
-  const 
-  RegisterPage({ Key? key }) : super(key: key);
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> implements RegisterContract {
+class _RegisterPageState extends State<RegisterPage>
+    implements RegisterContract {
   late RegisterPresenter presenter;
+  bool validate = true;
+  String message = "";
 
   @override
   void initState() {
@@ -32,14 +34,19 @@ class _RegisterPageState extends State<RegisterPage> implements RegisterContract
   @override
   registerError() {
     return Container(
-      color: Colors.black87,
       child: AlertDialog(
         backgroundColor: Colors.black26,
-        title: Text('Erro', style: TextStyle(color: Colors.white),),
+        title: Text(
+          'Erro',
+          style: TextStyle(color: Colors.white),
+        ),
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
-              Text('Não foi possível cadastrar o usuário!', style: TextStyle(color: Colors.white),),
+              Text(
+                'Não foi possível cadastrar o usuário!',
+                style: TextStyle(color: Colors.white),
+              ),
             ],
           ),
         ),
@@ -63,28 +70,26 @@ class _RegisterPageState extends State<RegisterPage> implements RegisterContract
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: AnimatedBuilder(
-          animation: presenter.state, 
-          builder: (context, child) => presenter.stateManagement(presenter.state.value)
-        ),
+      body: AnimatedBuilder(
+          animation: presenter.state,
+          builder: (context, child) =>
+              presenter.stateManagement(presenter.state.value)),
     );
   }
 
   @override
   registerLoading() {
-   return presenter.isLoading ? Container(child: Center(child: CircularProgressIndicator()), color: Colors.black87, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height,) : Container(color: Colors.black87,);
+    return presenter.isLoading
+        ? Center(child: CircularProgressIndicator())
+        : Container();
   }
 
   @override
   registerStart() {
     return Container(
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      color: Colors.black87,
       child: Padding(
-        padding: const EdgeInsets.only(right: 40.0,left: 40.0, top: 40.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        padding: const EdgeInsets.only(right: 40.0, left: 40.0, top: 100.0),
+        child: ListView(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -94,18 +99,66 @@ class _RegisterPageState extends State<RegisterPage> implements RegisterContract
                 Text(
                   "EMPLOX",
                   style: TextStyle(fontSize: 50, color: Colors.white),
-                  )
+                )
               ],
             ),
-            Container(height: 70,),
-
-            FieldForm(labelText: "Usuário", controller: presenter.username),
-            Container(height: 10,),
-            FieldForm(labelText: "Email", controller: presenter.email),
-            Container(height: 10,),
-            FieldForm(labelText: "Senha", controller: presenter.password),
-            Container(height: 40,),
-            SubmitButton(text: "Registrar-Se", onPressed: () { presenter.registerManangement(presenter.username.text, presenter.email.text, presenter.password.text);},)
+            Container(
+              height: 90,
+            ),
+            FieldForm(
+              labelText: "Usuário",
+              controller: presenter.username,
+              pwd: false,
+              errorText: validate ? null : "Campo obrigatório",
+            ),
+            Container(
+              height: 20,
+            ),
+            FieldForm(
+              labelText: "Email",
+              controller: presenter.email,
+              pwd: false,
+              errorText: validate ? null : message,
+            ),
+            Container(
+              height: 20,
+            ),
+            FieldForm(
+              labelText: "Senha",
+              controller: presenter.password,
+              pwd: true,
+              errorText: validate ? null : "Campo obrigatório",
+            ),
+            Container(
+              height: 50,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 30, right: 30),
+              child: SubmitButton(
+                text: "Registrar-Se",
+                onPressed: () {
+                  if (presenter.username.text.isEmpty) {
+                    validate = false;
+                    this.loadingManagement();
+                  } else if (presenter.email.text.isEmpty) {
+                    validate = false;
+                    message = "Campo obrigatório";
+                    this.loadingManagement();
+                  } else if (!presenter.email.text.contains("@")) {
+                    validate = false;
+                    message = "Email inválido";
+                    this.loadingManagement();
+                  } else if (presenter.password.text.isEmpty) {
+                    validate = false;
+                    this.loadingManagement();
+                  } else {
+                    validate = true;
+                    presenter.registerManangement(presenter.username.text,
+                        presenter.email.text, presenter.password.text);
+                  }
+                },
+              ),
+            )
           ],
         ),
       ),

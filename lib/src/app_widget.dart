@@ -14,8 +14,16 @@ class AppWidget extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
         fontFamily: 'Tomorrow',
+        scaffoldBackgroundColor: Color.fromRGBO(34, 34, 34, 100),
+        backgroundColor:  Color.fromRGBO(34, 34, 34, 100),
+        // colorScheme: Theme.of(context).colorScheme.copyWith(
+        //   secondary: Colors.blueAccent,
+        //   brightness: Brightness.dark,
+        //   primary: Colors.white,
+        //   onBackground: Colors.white,
+        //   background: Colors.black,
+        // )
       ),
     
       initialRoute: '/',

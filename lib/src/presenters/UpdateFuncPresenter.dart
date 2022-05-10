@@ -10,38 +10,38 @@ abstract class UpdateFuncContract {
 }
 
 class UpdateFuncPresenter {
-
   final UpdateFuncContract updateFuncContract;
-
-  FuncRepository _funcRepository = FuncRepository();
-  
   final state = ValueNotifier<UpdateFuncState>(UpdateFuncState.start);
 
   bool isLoading = false;
-
-  UpdateFuncPresenter(this.updateFuncContract);
-
+  // bool result = false;
+  
+  FuncRepository _funcRepository = FuncRepository();
   TextEditingController name = TextEditingController();
   TextEditingController role = TextEditingController();
 
+  UpdateFuncPresenter(this.updateFuncContract);
+
   updateFuncManangement(name, role, id) async {
-    late bool isRegister;
+     late bool isRegister;
 
     state.value = UpdateFuncState.loading;
     isLoading = true;
     updateFuncContract.loadingManagement();
+
     try {
-      print("oioioi");
+      // print("oioioi");
+      
       isRegister = await _funcRepository.fetchUpdateFunc(name, role, id);
-      print(isRegister);
+      
+      // print(isRegister);
 
       if (!isRegister) {
         isLoading = false;
         updateFuncContract.loadingManagement();
-        print("isRegister: $isRegister");
+        // print("isRegister: $isRegister");
         updateFuncContract.Success();
       }
-
     } catch (e) {
       state.value = UpdateFuncState.error;
       print(e);
@@ -60,4 +60,4 @@ class UpdateFuncPresenter {
   }
 }
 
-enum UpdateFuncState {start, error, loading} 
+enum UpdateFuncState { start, error, loading }

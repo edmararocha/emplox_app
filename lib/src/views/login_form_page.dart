@@ -31,7 +31,6 @@ class _LoginFormPageState extends State<LoginFormPage> implements LoginContract 
   @override
   loginError() {
     return Container(
-      color: Colors.black87,
       child: AlertDialog(
         backgroundColor: Colors.black26,
         title: Text('Erro', style: TextStyle(color: Colors.white),),
@@ -71,7 +70,7 @@ class _LoginFormPageState extends State<LoginFormPage> implements LoginContract 
 
   @override
   loginLoading() {
-   return presenter.isLoading ? Container(child: Center(child: CircularProgressIndicator()), color: Colors.black87, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height,) : Container(color: Colors.black87,);
+   return presenter.isLoading ? Center(child: CircularProgressIndicator()) : Container();
   }
 
   @override
@@ -79,11 +78,9 @@ class _LoginFormPageState extends State<LoginFormPage> implements LoginContract 
     return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
-      color: Colors.black87,
       child: Padding(
-        padding: const EdgeInsets.only(right: 40.0,left: 40.0, top: 40.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        padding: const EdgeInsets.only(right: 40.0,left: 40.0, top: 100.0),
+        child: ListView(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -96,13 +93,18 @@ class _LoginFormPageState extends State<LoginFormPage> implements LoginContract 
                   )
               ],
             ),
-            Container(height: 70,),
+            Container(height: 90,),
 
-            FieldForm(labelText: "Usuário", controller: presenter.username),
-            Container(height: 10,),
-            FieldForm(labelText: "Senha", controller: presenter.password),
-            Container(height: 40,),
-            SubmitButton(text: "Login", onPressed: () { presenter.loginManangement(presenter.username.text, presenter.password.text);},)
+            FieldForm(labelText: "Usuário", controller: presenter.username, pwd: false,),
+            Container(height: 20,),
+            FieldForm(labelText: "Senha", controller: presenter.password, pwd: true,),
+            Container(height: 50,),
+            Padding(
+              padding: const EdgeInsets.only(left: 30, right: 30),
+              child: SubmitButton(text: "Login", onPressed: () { 
+                presenter.loginManangement(presenter.username.text, presenter.password.text);
+              },),
+            )
           ],
         ),
       ),
