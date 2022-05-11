@@ -17,7 +17,9 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage>
     implements RegisterContract {
   late RegisterPresenter presenter;
-  bool validate = true;
+  bool validateUser = true;
+  bool validateEmail = true;
+  bool validatePassword = true;
   String message = "";
 
   @override
@@ -32,7 +34,7 @@ class _RegisterPageState extends State<RegisterPage>
   }
 
   @override
-  registerError() {
+  registerError(String message) {
     return Container(
       child: AlertDialog(
         backgroundColor: Colors.black26,
@@ -44,7 +46,7 @@ class _RegisterPageState extends State<RegisterPage>
           child: ListBody(
             children: <Widget>[
               Text(
-                'Não foi possível cadastrar o usuário!',
+                message,
                 style: TextStyle(color: Colors.white),
               ),
             ],
@@ -109,7 +111,7 @@ class _RegisterPageState extends State<RegisterPage>
               labelText: "Usuário",
               controller: presenter.username,
               pwd: false,
-              errorText: validate ? null : "Campo obrigatório",
+              errorText: validateUser ? null : "Campo obrigatório",
             ),
             Container(
               height: 20,
@@ -118,7 +120,7 @@ class _RegisterPageState extends State<RegisterPage>
               labelText: "Email",
               controller: presenter.email,
               pwd: false,
-              errorText: validate ? null : message,
+              errorText: validateEmail ? null : message,
             ),
             Container(
               height: 20,
@@ -127,7 +129,7 @@ class _RegisterPageState extends State<RegisterPage>
               labelText: "Senha",
               controller: presenter.password,
               pwd: true,
-              errorText: validate ? null : "Campo obrigatório",
+              errorText: validatePassword ? null : "Campo obrigatório",
             ),
             Container(
               height: 50,
@@ -138,21 +140,27 @@ class _RegisterPageState extends State<RegisterPage>
                 text: "Registrar-Se",
                 onPressed: () {
                   if (presenter.username.text.isEmpty) {
-                    validate = false;
+                    validateUser = false;
                     this.loadingManagement();
                   } else if (presenter.email.text.isEmpty) {
-                    validate = false;
+                    validateUser = true;
+                    validateEmail = false;
                     message = "Campo obrigatório";
                     this.loadingManagement();
                   } else if (!presenter.email.text.contains("@")) {
-                    validate = false;
+                    validateUser = true;
+                    validateEmail = false;
                     message = "Email inválido";
                     this.loadingManagement();
                   } else if (presenter.password.text.isEmpty) {
-                    validate = false;
+                    validateUser = true;
+                    validateEmail = true;
+                    validatePassword = false;
                     this.loadingManagement();
                   } else {
-                    validate = true;
+                    validateUser = true;
+                    validateEmail = true;
+                    validatePassword = true;
                     presenter.registerManangement(presenter.username.text,
                         presenter.email.text, presenter.password.text);
                   }

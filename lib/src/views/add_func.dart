@@ -18,7 +18,8 @@ class AddFuncPage extends StatefulWidget {
 
 class _AddFuncPageState extends State<AddFuncPage> implements AddFuncContract {
   late AddFuncPresenter presenter;
-  bool validate = true;
+  bool validateFunc = true;
+  bool validateRole = true;
 
   @override
   void initState() {
@@ -95,21 +96,23 @@ class _AddFuncPageState extends State<AddFuncPage> implements AddFuncContract {
               ),
               Container(height: 50,),
         
-              FieldForm(labelText: "Nome do funcionário", controller: presenter.name, pwd: false, errorText: validate ? null : "Campo obrigatório",),
+              FieldForm(labelText: "Nome do funcionário", controller: presenter.name, pwd: false, errorText: validateFunc ? null : "Campo obrigatório",),
               Container(height: 20,),
-              FieldForm(labelText: "Cargo", controller: presenter.role, pwd: false, errorText: validate ? null : "Campo obrigatório",),
+              FieldForm(labelText: "Cargo", controller: presenter.role, pwd: false, errorText: validateRole ? null : "Campo obrigatório",),
               Container(height: 50,),
               Padding(
                 padding: const EdgeInsets.only(right: 30, left: 30),
                 child: SubmitButton(text: "Registrar", onPressed: () { 
                   if (presenter.name.text.isEmpty) {
-                      validate = false;
+                      validateFunc = false;
                       this.loadingManagement();
                     } else if (presenter.role.text.isEmpty) {
-                      validate = false;
+                      validateFunc = true;
+                      validateRole = false;
                       this.loadingManagement();
                     } else {
-                      validate = true;
+                      validateFunc = true;
+                      validateRole = true;
                       presenter.registerManangement(presenter.name.text, presenter.role.text);
                     }
                   },),

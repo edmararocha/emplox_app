@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
 import '../repositories/user_repository.dart';
@@ -6,7 +7,7 @@ abstract class RegisterContract {
   registerStart();
   registerLoading();
   registerSuccess();
-  registerError();
+  registerError(String message);
   loadingManagement();
 }
 
@@ -19,6 +20,7 @@ class RegisterPresenter {
   final state = ValueNotifier<RegisterState>(RegisterState.start);
 
   bool isLoading = false;
+  String message = "";
 
   RegisterPresenter(this.registerContract);
 
@@ -33,15 +35,27 @@ class RegisterPresenter {
     isLoading = true;
     registerContract.loadingManagement();
     try {
-      isRegister = await _userRepository.fetchUserRegister(user, email, password);
+      var connectivityResult = await (Connectivity().checkConnectivity());
+      print(connectivityResult.index);
+      if (connectivityResult.index != 4) {
+        try {
+          isRegister = await _userRepository.fetchUserRegister(user, email, password);
 
-      if (!isRegister) {
-        isLoading = false;
-        registerContract.loadingManagement();
-        print("isRegister: $isRegister");
-        registerContract.registerSuccess();
+          if (!isRegister) {
+            isLoading = false;
+            registerContract.loadingManagement();
+            print("isRegister: $isRegister");
+            registerContract.registerSuccess();
+          }
+
+        } catch (e) {
+          message = "Não foi possível cadastrar o usuário!";
+          state.value = RegisterState.error;
+        }
+      } else {
+        message = "Sem conexão com a internet";
+        state.value = RegisterState.error;
       }
-
     } catch (e) {
       state.value = RegisterState.error;
     }
@@ -54,7 +68,7 @@ class RegisterPresenter {
       case RegisterState.loading:
         return registerContract.registerLoading();
       case RegisterState.error:
-        return registerContract.registerError();
+        return registerContract.registerError(message);
     }
   }
 }

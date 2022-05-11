@@ -17,6 +17,7 @@ class LoginFormPage extends StatefulWidget {
 class _LoginFormPageState extends State<LoginFormPage> implements LoginContract {
   late LoginPresenter presenter;
 
+
   @override
   void initState() {
     super.initState();
@@ -29,7 +30,7 @@ class _LoginFormPageState extends State<LoginFormPage> implements LoginContract 
   }
 
   @override
-  loginError() {
+  loginError(String message) {
     return Container(
       child: AlertDialog(
         backgroundColor: Colors.black26,
@@ -37,7 +38,7 @@ class _LoginFormPageState extends State<LoginFormPage> implements LoginContract 
         content: SingleChildScrollView(
           child: ListBody(
             children: <Widget>[
-              Text('Usuário ou senha incorretos', style: TextStyle(color: Colors.white),),
+              Text(message, style: TextStyle(color: Colors.white),),
             ],
           ),
         ),

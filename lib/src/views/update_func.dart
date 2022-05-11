@@ -26,7 +26,8 @@ class _UpdateFuncPageState extends State<UpdateFuncPage>
   final String? name;
   final String? role;
 
-  bool validate = true;
+  bool validateFunc = true;
+  bool validateRole = true;
 
   _UpdateFuncPageState(this.id, this.name, this.role);
 
@@ -126,11 +127,11 @@ class _UpdateFuncPageState extends State<UpdateFuncPage>
             Container(
               height: 50,
             ),
-            FieldForm(labelText: "Funcionário", controller: presenter.name, pwd: false, errorText: validate ? null : "Campo obrigatório",),
+            FieldForm(labelText: "Funcionário", controller: presenter.name, pwd: false, errorText: validateFunc ? null : "Campo obrigatório",),
             Container(
               height: 20,
             ),
-            FieldForm(labelText: "Cargo", controller: presenter.role, pwd: false, errorText: validate ? null : "Campo obrigatório"),
+            FieldForm(labelText: "Cargo", controller: presenter.role, pwd: false, errorText: validateRole ? null : "Campo obrigatório"),
             Container(
               height: 50,
             ),
@@ -140,13 +141,15 @@ class _UpdateFuncPageState extends State<UpdateFuncPage>
                 text: "Atualizar",
                 onPressed: () {
                   if (presenter.name.text.isEmpty) {
-                    validate = false;
+                    validateFunc = false;
                     this.loadingManagement();
                   } else if (presenter.role.text.isEmpty) {
-                    validate = false;
+                    validateFunc = true;
+                    validateRole = false;
                     this.loadingManagement();
                   } else {
-                    validate = true;
+                    validateFunc = true;
+                    validateRole = true;
                     presenter.updateFuncManangement(
                       presenter.name.text, presenter.role.text, widget.id);
                   }

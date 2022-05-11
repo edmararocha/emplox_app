@@ -6,7 +6,7 @@ abstract class LoginContract {
   loginStart();
   loginLoading();
   loginSuccess();
-  loginError();
+  loginError(String message);
   loadingManagement();
 }
 
@@ -19,6 +19,7 @@ class LoginPresenter {
   final state = ValueNotifier<LoginState>(LoginState.start);
 
   bool isLoading = false;
+  String message = "";
 
   LoginPresenter(this.loginContract);
 
@@ -47,12 +48,17 @@ class LoginPresenter {
           }
 
         } catch (e) {
+          message = "Usuário ou senha incorretos!";
           state.value = LoginState.error;
           print(e);
         }
+      } else {
+        message = "Sem conexão com a internet.";
+        state.value = LoginState.error;
       }
     } catch (e) {
       state.value = LoginState.error;
+      print(e);
     }
   }
 
@@ -63,7 +69,7 @@ class LoginPresenter {
       case LoginState.loading:
         return loginContract.loginLoading();
       case LoginState.error:
-        return loginContract.loginError();
+        return loginContract.loginError(message);
     }
   }
 }
